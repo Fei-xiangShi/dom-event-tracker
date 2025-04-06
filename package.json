@@ -1,0 +1,26 @@
+{
+  "name": "dom-event-tracker",
+  "version": "1.0.0",
+  "description": "DOM元素事件追踪器油猴插件",
+  "main": "dist/dom-event-tracker.user.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "tampermonkey",
+    "event-tracker",
+    "dom"
+  ],
+  "author": "FXS",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/tampermonkey": "^5.0.4",
+    "@vitejs/plugin-legacy": "^6.0.2",
+    "vite": "^6.2.5",
+    "vite-plugin-monkey": "^5.0.8"
+  }
+}

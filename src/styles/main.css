@@ -1,0 +1,601 @@
+:root {
+  --primary-color: #4a90e2;
+  --secondary-color: #2c3e50;
+  --accent-color: #f39c12;
+  --text-color: #333;
+  --bg-color: #fff;
+  --panel-bg: #f8f9faee;
+  --panel-border: #dee2e6;
+  --success-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --info-color: #3498db;
+  --event-row-hover: #f1f5f9;
+  --stack-bg: #f8f9fa;
+  --stack-border: #e9ecef;
+}
+
+/* 悬浮球样式 */
+.event-tracker-float-ball {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  user-select: none;
+}
+
+.event-tracker-float-ball:hover {
+  transform: scale(1.1);
+}
+
+.event-tracker-float-ball:before {
+  content: "ET";
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* 面板样式 */
+.event-tracker-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 400px;
+  max-height: 600px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.event-tracker-panel.hidden {
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.event-tracker-panel-header {
+  padding: 10px 15px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.event-tracker-panel-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.event-tracker-panel-close {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.event-tracker-panel-body {
+  padding: 15px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.event-tracker-controls {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.event-tracker-stack-controls {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 6px;
+  align-items: center;
+}
+
+.event-tracker-stack-controls .event-tracker-btn {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.event-tracker-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.event-tracker-btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.event-tracker-btn-primary:hover {
+  background-color: #3a7bc8;
+}
+
+.event-tracker-btn-secondary {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.event-tracker-btn-secondary:hover {
+  background-color: #1a2530;
+}
+
+.event-tracker-btn-danger {
+  background-color: var(--danger-color);
+  color: #fff;
+}
+
+.event-tracker-btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* 输出面板样式改进 */
+.event-tracker-panel-output {
+  background-color: #ffffffcc;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* 事件日志条目样式改进 */
+.event-log {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.15s;
+  cursor: pointer;
+}
+
+.event-log:hover {
+  background-color: var(--event-row-hover);
+}
+
+.event-log:last-child {
+  border-bottom: none;
+}
+
+.event-log-header {
+  display: flex;
+  align-items: center;
+}
+
+.event-type {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-right: 4px;
+}
+
+.event-phase {
+  color: var(--accent-color);
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.event-target {
+  color: var(--secondary-color);
+  font-style: italic;
+  font-size: 12px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toggle-stack {
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  transform: rotate(0deg);
+  transition: transform 0.2s;
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+}
+
+.toggle-stack.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* 堆栈跟踪样式改进 */
+.stack-trace {
+  margin-top: 6px;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  color: #6c757d;
+  background-color: var(--stack-bg);
+  border-left: 2px solid var(--stack-border);
+  padding: 6px 0 6px 10px;
+  border-radius: 0 4px 4px 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 250px;
+  overflow-y: auto;
+  display: block;
+  transition: max-height 0.3s ease;
+}
+
+.stack-trace.collapsed {
+  max-height: 0;
+  padding: 0 0 0 10px;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.stack-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 信息日志样式 */
+.log-info {
+  color: var(--info-color);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.log-action {
+  color: #e67e22;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.log-navigation {
+  color: #9b59b6;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.log-popup {
+  color: #9c27b0;
+  font-weight: 600;
+  padding: 4px 0;
+  background-color: rgba(156, 39, 176, 0.05);
+}
+
+.event-tracker-panel-status {
+  padding: 10px 15px;
+  background-color: #f1f3f5;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-tracker-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 事件选择器样式 */
+.event-tracker-selector {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  max-height: 80vh;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.event-tracker-selector.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.event-tracker-selector-header {
+  padding: 10px 15px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.event-tracker-selector-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.event-tracker-selector-close {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.event-tracker-selector-body {
+  padding: 15px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.event-tracker-selector-footer {
+  padding: 10px 15px;
+  background-color: #f1f3f5;
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-tracker-group {
+  margin-bottom: 15px;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.event-tracker-group-header {
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.event-tracker-events-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  padding: 8px 12px;
+}
+
+.event-tracker-event-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 0;
+}
+
+/* 蒙版样式 */
+.event-tracker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15);
+  z-index: 9997;
+  pointer-events: none;
+}
+
+/* 元素高亮样式 */
+.event-tracker-highlight {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 1px !important;
+  background-color: rgba(243, 156, 18, 0.1) !important;
+}
+
+.event-tracker-selected {
+  outline: 2px solid var(--success-color) !important;
+  outline-offset: 1px !important;
+  background-color: rgba(46, 204, 113, 0.1) !important;
+}
+
+.event-tracker-tooltip {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 10000;
+  max-width: 200px;
+}
+
+/* 日志类型颜色区分 */
+.log-info {
+  color: #2196F3;
+  font-size: 0.9em;
+  padding: 3px 0;
+}
+
+.log-action {
+  color: #4CAF50;
+  font-weight: bold;
+  padding: 3px 0;
+}
+
+.log-popup {
+  color: #FF9800;
+  font-weight: bold;
+  padding: 3px 0;
+}
+
+.log-navigation {
+  color: #9C27B0;
+  font-weight: bold;
+  padding: 3px 0;
+}
+
+.log-stack {
+  color: #607D8B;
+  font-size: 0.85em;
+  padding: 3px 0;
+  font-family: monospace;
+}
+
+/* 事件日志强化样式 */
+.event-log {
+  margin-bottom: 2px;
+  border-left: 3px solid #2196F3;
+  background-color: rgba(33, 150, 243, 0.05);
+}
+
+.event-log-header {
+  padding: 4px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.event-type {
+  font-weight: bold;
+  color: #E91E63;
+  margin-right: 6px;
+}
+
+.event-phase {
+  color: #9E9E9E;
+  font-size: 0.85em;
+  margin-right: 6px;
+}
+
+.event-target {
+  color: #333;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 堆栈信息美化 */
+.stack-trace {
+  font-family: monospace;
+  font-size: 0.85em;
+  background-color: rgba(0,0,0,0.02);
+  padding: 6px 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  color: #555;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.stack-trace.collapsed {
+  display: none;
+}
+
+.toggle-stack {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  cursor: pointer;
+  color: #2196F3;
+  margin-right: 8px;
+  transition: transform 0.2s;
+}
+
+.toggle-stack.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* 添加内联事件特殊标记 */
+.event-log-header:has(+ .stack-trace:not(:empty)) {
+  background-color: rgba(255, 152, 0, 0.1);
+}
+
+/* 优化面板整体样式 */
+.event-tracker-panel {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.event-tracker-panel-header {
+  background: linear-gradient(to right, #2196F3, #03A9F4);
+  color: white;
+}
+
+.event-tracker-panel-output {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* 删除不支持的:contains选择器 */
+/* 为不同事件类型添加不同颜色指示器 */
+.event-type:before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 50%;
+}
+
+/* 用JavaScript添加data-event-type属性，然后用属性选择器代替:contains */
+.event-type[data-event-type="click"]:before,
+.event-type[data-event-type="mousedown"]:before,
+.event-type[data-event-type="mouseup"]:before,
+.event-type[data-event-type="mousemove"]:before,
+.event-type[data-event-type="mouseover"]:before,
+.event-type[data-event-type="mouseout"]:before {
+  background-color: #E91E63;
+}
+
+.event-type[data-event-type="keydown"]:before,
+.event-type[data-event-type="keyup"]:before,
+.event-type[data-event-type="keypress"]:before {
+  background-color: #4CAF50;
+}
+
+.event-type[data-event-type="focus"]:before,
+.event-type[data-event-type="blur"]:before {
+  background-color: #9C27B0;
+}
+
+.event-type[data-event-type="input"]:before,
+.event-type[data-event-type="change"]:before,
+.event-type[data-event-type="submit"]:before {
+  background-color: #FF9800;
+}
+
+/* 查看源码按钮样式 */
+.view-source-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 5px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.view-source-btn:hover {
+  opacity: 1;
+} 
