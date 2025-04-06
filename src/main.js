@@ -6,10 +6,41 @@ import { EventTracker } from './components/EventTracker';
 import { EventSelector } from './components/EventSelector';
 
 /**
+ * 应用主题设置
+ */
+function applyInitialTheme() {
+  // 检查本地存储中是否有保存的主题
+  const savedTheme = localStorage.getItem('event-tracker-theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    return;
+  }
+  
+  // 检查系统偏好
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+  
+  // 监听系统主题变化
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  if (darkModeMediaQuery.addEventListener) {
+    darkModeMediaQuery.addEventListener('change', (e) => {
+      // 只有在用户没有手动设置主题时才跟随系统主题
+      if (!localStorage.getItem('event-tracker-theme')) {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+}
+
+/**
  * DOM事件追踪器应用
  */
 class EventTrackerApp {
   constructor() {
+    // 先应用初始主题
+    applyInitialTheme();
+    
     this.floatBall = null;
     this.panel = null;
     this.elementSelector = null;

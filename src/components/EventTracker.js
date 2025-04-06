@@ -1206,28 +1206,53 @@ export class EventTracker {
         const style = document.createElement('style');
         style.id = 'event-tracker-source-viewer-style';
         style.textContent = `
+          :root {
+            --sv-bg-color: white;
+            --sv-border-color: #ccc;
+            --sv-header-bg: #2c3e50;
+            --sv-header-color: white;
+            --sv-code-bg: white;
+            --sv-line-number-color: #888;
+            --sv-line-border-color: #ddd;
+            --sv-highlighted-bg: rgba(255, 235, 59, 0.2);
+            --sv-text-color: #333;
+          }
+          
+          [data-theme="dark"] {
+            --sv-bg-color: #1f2937;
+            --sv-border-color: #4b5563;
+            --sv-header-bg: #374151;
+            --sv-header-color: #e5e7eb;
+            --sv-code-bg: #1f2937;
+            --sv-line-number-color: #9ca3af;
+            --sv-line-border-color: #4b5563;
+            --sv-highlighted-bg: rgba(180, 170, 50, 0.2);
+            --sv-text-color: #e5e7eb;
+          }
+          
           .event-tracker-source-viewer {
             position: fixed;
             top: 10%;
             left: 10%;
             width: 80%;
             height: 80%;
-            background-color: white;
-            border: 1px solid #ccc;
+            background-color: var(--sv-bg-color);
+            border: 1px solid var(--sv-border-color);
             border-radius: 5px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
             z-index: 10000;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            color: var(--sv-text-color);
           }
           .source-viewer-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 8px 16px;
-            background-color: #2c3e50;
-            color: white;
+            background-color: var(--sv-header-bg);
+            color: var(--sv-header-color);
           }
           .source-viewer-title {
             font-weight: bold;
@@ -1244,6 +1269,7 @@ export class EventTracker {
             flex: 1;
             overflow: auto;
             position: relative;
+            background-color: var(--sv-code-bg);
           }
           .source-viewer-code {
             font-family: monospace;
@@ -1253,6 +1279,8 @@ export class EventTracker {
             white-space: pre;
             padding: 10px;
             counter-reset: line;
+            color: var(--sv-text-color);
+            background-color: var(--sv-code-bg);
           }
           .source-viewer-code .line {
             counter-increment: line;
@@ -1267,12 +1295,12 @@ export class EventTracker {
             padding-right: 1em;
             margin-right: 1em;
             text-align: right;
-            color: #888;
-            border-right: 1px solid #ddd;
+            color: var(--sv-line-number-color);
+            border-right: 1px solid var(--sv-line-border-color);
             user-select: none;
           }
           .source-viewer-code .line.highlighted {
-            background-color: rgba(255, 235, 59, 0.2);
+            background-color: var(--sv-highlighted-bg);
           }
           .source-viewer-editor {
             display: none;
@@ -1286,31 +1314,8 @@ export class EventTracker {
             outline: none;
             resize: none;
             tab-size: 4;
-          }
-          .source-viewer-toolbar {
-            padding: 8px;
-            display: flex;
-            gap: 8px;
-            background-color: #f5f5f5;
-            border-top: 1px solid #ddd;
-          }
-          .source-viewer-btn {
-            padding: 4px 8px;
-            border: 1px solid #ccc;
-            background-color: white;
-            border-radius: 3px;
-            cursor: pointer;
-          }
-          .source-viewer-btn:hover {
-            background-color: #f0f0f0;
-          }
-          .source-viewer-btn-primary {
-            background-color: #2c3e50;
-            color: white;
-            border-color: #2c3e50;
-          }
-          .source-viewer-btn-primary:hover {
-            background-color: #1a2530;
+            background-color: var(--sv-code-bg);
+            color: var(--sv-text-color);
           }
         `;
         document.head.appendChild(style);
@@ -1320,18 +1325,12 @@ export class EventTracker {
     // 更新查看器内容
     viewer.innerHTML = `
       <div class="source-viewer-header">
-        <div class="source-viewer-title">${title || '源代码查看器'}</div>
+        <div class="source-viewer-title">${title || '源代码'}</div>
         <div class="source-viewer-close">×</div>
       </div>
       <div class="source-viewer-content">
-        <div class="source-viewer-code"></div>
+        <pre class="source-viewer-code"></pre>
         <textarea class="source-viewer-editor"></textarea>
-      </div>
-      <div class="source-viewer-toolbar">
-        <button class="source-viewer-btn" id="source-viewer-edit-btn">编辑</button>
-        <button class="source-viewer-btn source-viewer-btn-primary" id="source-viewer-apply-btn" style="display:none">应用更改</button>
-        <button class="source-viewer-btn" id="source-viewer-cancel-btn" style="display:none">取消</button>
-        <span class="source-viewer-status"></span>
       </div>
     `;
     

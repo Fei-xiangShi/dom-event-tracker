@@ -12,13 +12,36 @@ export class Panel {
     this.onSelectNewElement = null;
     this.onSelectEvents = null;
     this.onLogLevelChange = null;
+    this.currentTheme = this.getPreferredTheme();
     this.init();
+  }
+
+  /**
+   * 获取首选主题
+   * @returns {string} 主题名称
+   */
+  getPreferredTheme() {
+    // 首先检查本地存储中是否有保存的主题
+    const savedTheme = localStorage.getItem('event-tracker-theme');
+    if (savedTheme) {
+      return savedTheme;
+    }
+    
+    // 检查系统偏好
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    
+    return 'light';
   }
 
   /**
    * 初始化面板
    */
   init() {
+    // 应用主题到文档
+    this.applyTheme();
+    
     // 创建面板元素
     this.element = document.createElement('div');
     this.element.className = 'event-tracker-panel hidden';
@@ -27,6 +50,7 @@ export class Panel {
     this.element.innerHTML = `
       <div class="event-tracker-panel-header">
         <div class="event-tracker-panel-title">DOM事件追踪器</div>
+        <button class="theme-toggle-btn" data-theme="${this.currentTheme}"></button>
         <div class="event-tracker-panel-close">×</div>
       </div>
       <div class="event-tracker-panel-body">
@@ -107,6 +131,10 @@ export class Panel {
     // 关闭按钮
     const closeBtn = this.element.querySelector('.event-tracker-panel-close');
     closeBtn.addEventListener('click', () => this.hide());
+    
+    // 主题切换按钮
+    const themeToggleBtn = this.element.querySelector('.theme-toggle-btn');
+    themeToggleBtn.addEventListener('click', () => this.toggleTheme());
     
     // 选择元素按钮
     const selectBtn = this.element.querySelector('#event-tracker-select-btn');
@@ -352,13 +380,73 @@ export class Panel {
   }
 
   /**
-   * 销毁组件
+   * 切换主题
+   */
+  toggleTheme() {
+    try {
+      // 切换主题前的状态
+      console.log(`切换主题前：当前主题=${this.currentTheme}, HTML data-theme=${document.documentElement.getAttribute('data-theme')}`);
+      
+      // 切换主题
+      this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+      
+      // 更新按钮状态
+      const themeToggleBtn = this.element.querySelector('.theme-toggle-btn');
+      if (themeToggleBtn) {
+        themeToggleBtn.setAttribute('data-theme', this.currentTheme);
+        
+        // 添加临时状态指示类
+        themeToggleBtn.classList.add('theme-changing');
+        setTimeout(() => {
+          themeToggleBtn.classList.remove('theme-changing');
+        }, 1000);
+      }
+      
+      // 保存主题到本地存储
+      localStorage.setItem('event-tracker-theme', this.currentTheme);
+      
+      // 应用主题到文档
+      document.documentElement.setAttribute('data-theme', this.currentTheme);
+      
+      // 切换主题后的状态
+      console.log(`切换主题后：当前主题=${this.currentTheme}, HTML data-theme=${document.documentElement.getAttribute('data-theme')}`);
+      
+      // 显示主题切换成功提示
+      const themeChangedMsg = document.createElement('div');
+      themeChangedMsg.className = 'theme-changed-message';
+      themeChangedMsg.textContent = `已切换到${this.currentTheme === 'dark' ? '深色' : '浅色'}模式`;
+      document.body.appendChild(themeChangedMsg);
+      
+      setTimeout(() => {
+        themeChangedMsg.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(themeChangedMsg);
+        }, 500);
+      }, 1500);
+    } catch (error) {
+      console.error('切换主题时发生错误:', error);
+    }
+  }
+  
+  /**
+   * 应用主题到文档
+   */
+  applyTheme() {
+    // 设置文档的data-theme属性
+    document.documentElement.setAttribute('data-theme', this.currentTheme);
+    console.log('应用主题:', this.currentTheme, '到文档根元素');
+  }
+
+  /**
+   * 销毁面板
    */
   destroy() {
+    // 移除本地存储中的主题设置
+    // localStorage.removeItem('event-tracker-theme');
+    
+    // 移除面板元素
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element);
     }
-    this.element = null;
-    this.outputElement = null;
   }
 } 
